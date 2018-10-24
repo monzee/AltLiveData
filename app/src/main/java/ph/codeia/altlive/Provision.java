@@ -47,6 +47,6 @@ public enum Provision implements ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(LoginController.class)) {
             return modelClass.cast(new LoginController(authService(), liveBuilder()));
         }
-        throw new IllegalArgumentException("I don't know how to make this");
+        throw new IllegalArgumentException("Don't know how to make " + modelClass.getSimpleName());
     }
 }

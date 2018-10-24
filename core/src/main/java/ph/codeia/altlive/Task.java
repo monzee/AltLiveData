@@ -28,7 +28,7 @@ public interface Task<I, O> {
         });
     }
 
-    static <I, O> Progress<I, O> whenDone(Observer<O> observer) {
+    static <I, O> Progress<I, O> whenDone(Receiver<O> receiver) {
         return new Progress<I, O>() {
             @Override
             public void running(I key, @Nullable O currentValue) {
@@ -36,7 +36,7 @@ public interface Task<I, O> {
 
             @Override
             public void done(I key, O value) {
-                observer.onChanged(value);
+                receiver.accept(value);
             }
 
             @Override
@@ -45,7 +45,25 @@ public interface Task<I, O> {
         };
     }
 
-    interface Progress<I, O> extends Observer<Task<? extends I, ? extends O>> {
+    static <I, O> Progress<I, O> whenDone(Try.Case<O> continuation) {
+        return new Progress<I, O>() {
+            @Override
+            public void running(I key, @Nullable O currentValue) {
+            }
+
+            @Override
+            public void done(I key, O value) {
+                continuation.ok(value);
+            }
+
+            @Override
+            public void failed(I key, Throwable error) {
+                continuation.error(error);
+            }
+        };
+    }
+
+    interface Progress<I, O> extends Receiver<Task<? extends I, ? extends O>> {
         void running(I key, @Nullable O currentValue);
         void done(I key, O value);
 
@@ -59,7 +77,7 @@ public interface Task<I, O> {
         }
 
         @Override
-        default void onChanged(@Nullable Task<? extends I, ? extends O> ioTask) {
+        default void accept(@Nullable Task<? extends I, ? extends O> ioTask) {
             if (ioTask != null) {
                 ioTask.select(this);
             }

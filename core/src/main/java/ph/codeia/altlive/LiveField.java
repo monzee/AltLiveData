@@ -165,19 +165,19 @@ public class LiveField<T> implements Live<T>, Feed<T>, DefaultLifecycleObserver 
     }
 
     private final Map<LifecycleOwner, OwnerMeta<T>> metaByOwner = new HashMap<>();
-    private final Map<Observer<? super T>, LifecycleOwner> ownerByObserver = new HashMap<>();
+    private final Map<Receiver<? super T>, LifecycleOwner> ownerByObserver = new HashMap<>();
     private final Executor executor;
     private final Lifecycle.Event activator;
     private final Lifecycle.Event deactivator;
     private final boolean isSticky;
-    private volatile boolean hasValue;
+    private boolean hasValue;
     private T value;
 
     private LiveField(Builder builder) {
-        this.executor = builder.executor;
-        this.activator = builder.activator;
-        this.deactivator = builder.deactivator;
-        this.isSticky = builder.isSticky;
+        executor = builder.executor;
+        activator = builder.activator;
+        deactivator = builder.deactivator;
+        isSticky = builder.isSticky;
     }
 
     /**
@@ -206,7 +206,7 @@ public class LiveField<T> implements Live<T>, Feed<T>, DefaultLifecycleObserver 
      *
      * <p> No observer will be invoked until a new value is set.
      */
-    public void clear() {
+    public synchronized void clear() {
         value = null;
         hasValue = false;
     }
@@ -225,14 +225,89 @@ public class LiveField<T> implements Live<T>, Feed<T>, DefaultLifecycleObserver 
      * value in the current thread.
      */
     public void setValue(T t) {
-        value = t;
-        hasValue = true;
-        notifyObservers();
+        synchronized (this) {
+            value = t;
+            hasValue = true;
+        }
+        for (OwnerMeta<T> meta : metaByOwner.values()) {
+            meta.notifyReceivers(t);
+        }
     }
 
     @Override
     public void postValue(@Nullable T t) {
         executor.execute(() -> setValue(t));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p> Throws an {@link IllegalArgumentException} when an observer is re-
+     * registered with a different owner. Does nothing when an observer is re-
+     * registered with the same owner.
+     */
+    @Override
+    public void observe(LifecycleOwner owner, Receiver<? super T> receiver) {
+        Lifecycle lifecycle = owner.getLifecycle();
+        if (lifecycle.getCurrentState() == Lifecycle.State.DESTROYED) {
+            return;
+        }
+
+        LifecycleOwner existingOwner = ownerByObserver.get(receiver);
+        if (existingOwner == null) synchronized (this) {
+            existingOwner = ownerByObserver.get(receiver);
+            if (existingOwner == null) {
+                existingOwner = owner;
+                ownerByObserver.put(receiver, owner);
+            }
+        }
+        if (existingOwner != owner) {
+            throw new IllegalArgumentException("An observer can only be associated with one owner");
+        }
+
+        OwnerMeta<T> meta = metaByOwner.get(owner);
+        if (meta != null && meta.receivers.contains(receiver)) {
+            return;
+        }
+        synchronized (this) {
+            meta = metaByOwner.get(owner);
+            if (meta == null) {
+                meta = new OwnerMeta<>();
+                meta.receivers.add(receiver);
+                metaByOwner.put(owner, meta);
+                lifecycle.addObserver(this);
+            }
+            else if (!meta.receivers.contains(receiver)){
+                meta.receivers.add(receiver);
+                if (isSticky && hasValue && meta.active) {
+                    receiver.accept(value);
+                }
+            }
+        }
+    }
+
+    @Override
+    public synchronized void removeObservers(LifecycleOwner owner) {
+        OwnerMeta<T> meta = metaByOwner.remove(owner);
+        if (meta != null) {
+            owner.getLifecycle().removeObserver(this);
+            for (Receiver<? super T> receiver : meta.receivers) {
+                ownerByObserver.remove(receiver);
+            }
+        }
+    }
+
+    @Override
+    public synchronized void removeObserver(Receiver<? super T> receiver) {
+        LifecycleOwner owner = ownerByObserver.remove(receiver);
+        if (owner != null) {
+            OwnerMeta<T> meta = metaByOwner.get(owner);
+            meta.receivers.remove(receiver);
+            if (meta.receivers.isEmpty()) {
+                metaByOwner.remove(owner);
+                owner.getLifecycle().removeObserver(this);
+            }
+        }
     }
 
     @Override
@@ -267,83 +342,12 @@ public class LiveField<T> implements Live<T>, Feed<T>, DefaultLifecycleObserver 
         removeObservers(owner);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p> Throws an {@link IllegalArgumentException} when an observer is re-
-     * registered with a different owner. Does nothing when an observer is re-
-     * registered with the same owner.
-     */
-    @Override
-    public void observe(LifecycleOwner owner, Observer<? super T> observer) {
-        Lifecycle lifecycle = owner.getLifecycle();
-        if (lifecycle.getCurrentState() == Lifecycle.State.DESTROYED) {
-            return;
-        }
-
-        LifecycleOwner existingOwner = ownerByObserver.get(observer);
-        if (existingOwner == null) synchronized (this) {
-            existingOwner = ownerByObserver.get(observer);
-            if (existingOwner == null) {
-                existingOwner = owner;
-                ownerByObserver.put(observer, owner);
-            }
-        }
-        if (existingOwner != owner) {
-            throw new IllegalArgumentException("An observer can only be associated with one owner");
-        }
-
-        OwnerMeta<T> meta = metaByOwner.get(owner);
-        if (meta != null && meta.observers.contains(observer)) {
-            return;
-        }
-        synchronized (this) {
-            meta = metaByOwner.get(owner);
-            if (meta == null) {
-                meta = new OwnerMeta<>();
-                meta.observers.add(observer);
-                metaByOwner.put(owner, meta);
-                lifecycle.addObserver(this);
-            }
-            else if (!meta.observers.contains(observer)){
-                meta.observers.add(observer);
-                if (isSticky && hasValue && meta.active) {
-                    observer.onChanged(value);
-                }
-            }
-        }
-    }
-
-    @Override
-    public synchronized void removeObservers(LifecycleOwner owner) {
-        OwnerMeta<T> meta = metaByOwner.remove(owner);
-        if (meta != null) {
-            owner.getLifecycle().removeObserver(this);
-            for (Observer<? super T> observer : meta.observers) {
-                ownerByObserver.remove(observer);
-            }
-        }
-    }
-
-    @Override
-    public synchronized void removeObserver(Observer<? super T> observer) {
-        LifecycleOwner owner = ownerByObserver.remove(observer);
-        if (owner != null) {
-            OwnerMeta<T> meta = metaByOwner.get(owner);
-            meta.observers.remove(observer);
-            if (meta.observers.isEmpty()) {
-                metaByOwner.remove(owner);
-                owner.getLifecycle().removeObserver(this);
-            }
-        }
-    }
-
     private void maybeActivate(Lifecycle.Event event, LifecycleOwner owner) {
         if (activator == event) {
             OwnerMeta<T> meta = metaByOwner.get(owner);
             meta.active = true;
             if (isSticky && hasValue) {
-                notifyObservers(meta);
+                meta.notifyReceivers(value);
             }
         }
     }
@@ -354,24 +358,15 @@ public class LiveField<T> implements Live<T>, Feed<T>, DefaultLifecycleObserver 
         }
     }
 
-    private void notifyObservers() {
-        for (OwnerMeta<T> meta : metaByOwner.values()) {
-            notifyObservers(meta);
-        }
-    }
+    private static class OwnerMeta<T> {
+        final List<Receiver<? super T>> receivers = new CopyOnWriteArrayList<>();
+        volatile boolean active = false;
 
-    private void notifyObservers(OwnerMeta<T> meta) {
-        if (meta.active) {
-            T copy = value;
-            for (Observer<? super T> observer : meta.observers) {
-                observer.onChanged(copy);
+        void notifyReceivers(T value) {
+            if (active) for (Receiver<? super T> receiver : receivers) {
+                receiver.accept(value);
             }
         }
-    }
-
-    private static class OwnerMeta<T> {
-        final List<Observer<? super T>> observers = new CopyOnWriteArrayList<>();
-        volatile boolean active = false;
     }
 }
 

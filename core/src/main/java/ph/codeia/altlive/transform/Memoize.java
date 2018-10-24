@@ -12,8 +12,10 @@ public class Memoize<T> implements Try<T> {
     private final Try<T> source;
     private T value;
     private Throwable error;
-    private boolean done;
+    private boolean isDone = false;
+    private long timestamp;
 
+    @Transformer
     public Memoize(Try<T> source) {
         this.source = source;
     }
@@ -21,31 +23,53 @@ public class Memoize<T> implements Try<T> {
     public synchronized void clear() {
         value = null;
         error = null;
-        done = false;
+        isDone = false;
+    }
+
+    public boolean hasValue() {
+        return isDone;
+    }
+
+    public boolean isOlderThan(long millis) {
+        return !isDone || System.currentTimeMillis() - timestamp > millis;
     }
 
     @Override
     public void select(Case<? super T> continuation) {
-        if (!done) synchronized (this) {
-            if (!done) {
-                source.select(new Case<T>() {
-                    @Override
-                    public void ok(T t) {
+        if (isDone) {
+            resume(continuation);
+            return;
+        }
+        source.select(new Case<T>() {
+            @Override
+            public void ok(T t) {
+                synchronized (Memoize.this) {
+                    if (!isDone) {
                         value = t;
-                        done = true;
-                        continuation.ok(t);
+                        timestamp = System.currentTimeMillis();
+                        isDone = true;
                     }
+                }
+                resume(continuation);
+            }
 
-                    @Override
-                    public void error(@NonNull Throwable t) {
+            @Override
+            public void error(@NonNull Throwable t) {
+                synchronized (Memoize.this) {
+                    if (!isDone) {
                         error = t;
-                        done = true;
+                        timestamp = System.currentTimeMillis();
+                        isDone = true;
                         continuation.error(t);
                     }
-                });
+                }
+                resume(continuation);
             }
-        }
-        else if (error == null) {
+        });
+    }
+
+    private void resume(Case<? super T> continuation) {
+        if (error == null) {
             continuation.ok(value);
         }
         else {

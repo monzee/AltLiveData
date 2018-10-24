@@ -50,9 +50,9 @@ public class LiveLoader<T> implements Live<Loader<T>>, Feed<Try<T>> {
     @Override
     public void observe(
             LifecycleOwner owner,
-            Observer<? super Loader<T>> observer
+            Receiver<? super Loader<T>> receiver
     ) {
-        delegate.observe(owner, observer);
+        delegate.observe(owner, receiver);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class LiveLoader<T> implements Live<Loader<T>>, Feed<Try<T>> {
     }
 
     @Override
-    public void removeObserver(Observer<? super Loader<T>> observer) {
-        delegate.removeObserver(observer);
+    public void removeObserver(Receiver<? super Loader<T>> receiver) {
+        delegate.removeObserver(receiver);
     }
 }

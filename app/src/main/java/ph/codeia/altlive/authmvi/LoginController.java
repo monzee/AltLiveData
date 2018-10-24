@@ -14,32 +14,32 @@ import ph.codeia.altlive.LiveField;
 import ph.codeia.altlive.LiveTask;
 import ph.codeia.altlive.Task;
 import ph.codeia.altlive.Try;
+import ph.codeia.altlive.transform.Recover;
 
 public class LoginController extends ViewModel {
     public static final String MESSAGE_REQUIRED = "This cannot be empty";
     public static final String MESSAGE_BAD_EMAIL = "Invalid email address";
 
     private final AuthService auth;
-    private final LiveTask<Login.Intent, Login.Model> dispatcher;
-    private final LiveField<String> toasts;
+    private final LiveTask<Login.Action, Login.Model> state;
+    private final LiveField<Login.Event> events;
     private String username;
     private String password;
     private String authToken;
-    private Login.Model saved = Login.View::loggedOut;
 
     public LoginController(AuthService auth, LiveField.Builder builder) {
         this.auth = auth;
-        dispatcher = new LiveTask<>(builder, this::dispatch);
+        state = new LiveTask<>(builder, this::dispatch);
         builder.sticky(false);
-        toasts = builder.build();
+        events = builder.build();
     }
 
-    public Live<String> toasts() {
-        return toasts;
+    public Live<Task<Login.Action, Login.Model>> state() {
+        return state;
     }
 
-    public Live<Task<Login.Intent, Login.Model>> dispatcher() {
-        return dispatcher;
+    public Live<Login.Event> events() {
+        return events;
     }
 
     public void login(
@@ -48,69 +48,96 @@ public class LoginController extends ViewModel {
     ) {
         this.username = username.toString();
         this.password = password.toString();
-        dispatcher.postValue(Login.Intent.LOGIN);
+        state.postValue(Login.Action.LOGIN);
     }
 
     public void logout() {
-        dispatcher.postValue(Login.Intent.LOGOUT);
+        state.postValue(Login.Action.LOGOUT);
     }
 
     public void tell(String text, Object... fmtArgs) {
-        toasts.postValue(String.format(text, fmtArgs));
+        String message = String.format(text, fmtArgs);
+        events.postValue(on -> on.show(message));
     }
 
-    public void mark(Login.Model model) {
-        if (model != null) {
-            saved = model;
-        }
-    }
-
-    public void rollback() {
-        dispatcher.postValue(Login.Intent.PUSH);
-    }
-
-    private Try<Login.Model> dispatch(Login.Intent intent) {
-        switch (intent) {
+    private Try<Login.Model> dispatch(Login.Action action) {
+        switch (action) {
             case LOGIN:
-                String unError = validateUsername(username);
-                String pwError = validatePassword(password);
-                if (unError != null || pwError != null) {
-                    return Try.just(view -> view.invalid(unError, pwError));
+                Errors errors = validate(username, password);
+                if (errors.any()) {
+                    events.postValue(errors);
+                    return Try.just(errors);
                 }
-                else {
-                    return auth.login(username, password).map(token -> {
-                        authToken = token;
-                        return view -> view.loggedIn(token);
-                    });
-                }
+                return auth.login(username, password)
+                        .<Login.Model>map(token -> {
+                            authToken = token;
+                            tell("token: %s", token);
+                            return view -> view.loggedIn(token);
+                        })
+                        .pipe(Recover.from(error -> {
+                            try {
+                                throw error;
+                            }
+                            catch (AuthService.Unavailable | AuthService.Rejected e) {
+                                tell("Unable to login. %s.", e.getMessage());
+                                return Login.View::loggedOut;
+                            }
+                        }));
             case LOGOUT:
                 if (authToken == null) {
                     return Try.raise(new IllegalStateException("not logged in"));
                 }
-                else {
-                    return auth.logout(authToken).map(o -> Login.View::loggedOut);
-                }
-            case PUSH:
-                return Try.just(saved);
+                return auth.logout(authToken)
+                        .<Login.Model>map(o -> Login.View::loggedOut)
+                        .pipe(Recover.from(error -> {
+                            try {
+                                throw error;
+                            }
+                            catch (AuthService.Unavailable e) {
+                                tell("Unable to logout. %s.", e.getMessage());
+                                return view -> view.loggedIn(authToken);
+                            }
+                        }));
         }
-        return Try.raise(new UnsupportedOperationException(intent.toString()));
+        return Try.raise(new UnsupportedOperationException(action.toString()));
     }
 
-    private static String validateUsername(String username) {
+    private static Errors validate(String username, String password) {
+        Errors result = new Errors();
         if (username.isEmpty()) {
-            return MESSAGE_REQUIRED;
+            result.username = MESSAGE_REQUIRED;
         }
-        if (!PatternsCompat.EMAIL_ADDRESS.matcher(username).matches()) {
-            return MESSAGE_BAD_EMAIL;
+        else if (!PatternsCompat.EMAIL_ADDRESS.matcher(username).matches()) {
+            result.username = MESSAGE_BAD_EMAIL;
         }
-        return null;
+        if (password.isEmpty()) {
+            result.password = MESSAGE_REQUIRED;
+        }
+        return result;
     }
 
-    private static String validatePassword(String password) {
-        if (password.isEmpty()) {
-            return MESSAGE_REQUIRED;
+    private static class Errors implements Login.Model, Login.Event {
+        String username;
+        String password;
+
+        boolean any() {
+            return username != null || password != null;
         }
-        return null;
+
+        @Override
+        public void render(Login.View view) {
+            view.invalid(username, password);
+        }
+
+        @Override
+        public void dispatch(Login.Effects on) {
+            if (username != null) {
+                on.focusUsername();
+            }
+            else {
+                on.focusPassword();
+            }
+        }
     }
 }
 

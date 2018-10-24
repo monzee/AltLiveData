@@ -62,9 +62,9 @@ public class LiveTask<I, O> implements Live<Task<I, O>>, Feed<I> {
     @Override
     public void observe(
             LifecycleOwner owner,
-            Observer<? super Task<I, O>> observer
+            Receiver<? super Task<I, O>> receiver
     ) {
-        delegate.observe(owner, observer);
+        delegate.observe(owner, receiver);
     }
 
     @Override
@@ -73,8 +73,8 @@ public class LiveTask<I, O> implements Live<Task<I, O>>, Feed<I> {
     }
 
     @Override
-    public void removeObserver(Observer<? super Task<I, O>> observer) {
-        delegate.removeObserver(observer);
+    public void removeObserver(Receiver<? super Task<I, O>> receiver) {
+        delegate.removeObserver(receiver);
     }
 }
 

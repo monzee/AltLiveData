@@ -4,15 +4,16 @@ package ph.codeia.altlive.transform;
  * This file is a part of the AltLiveData project.
  */
 
-import java.util.concurrent.Callable;
+import android.support.annotation.NonNull;
+
 import java.util.concurrent.Executor;
 
 import ph.codeia.altlive.Function;
 import ph.codeia.altlive.Try;
 
-public class Execute<T> implements Try<T> {
+public class Receive<T> implements Try<T> {
 
-    public static class Partial<T> implements Function<Try<T>, Execute<T>> {
+    public static class Partial<T> implements Function<Try<T>, Receive<T>> {
         private final Executor executor;
 
         private Partial(Executor executor) {
@@ -20,8 +21,8 @@ public class Execute<T> implements Try<T> {
         }
 
         @Override
-        public Execute<T> apply(Try<T> source) {
-            return new Execute<>(source, executor);
+        public Receive<T> apply(Try<T> source) {
+            return new Receive<>(source, executor);
         }
     }
 
@@ -30,20 +31,27 @@ public class Execute<T> implements Try<T> {
         return new Partial<>(executor);
     }
 
-    public static <T> Execute<T> on(Executor executor, Callable<? extends T> block) {
-        return new Execute<>(Try.of(block), executor);
-    }
-
     private final Try<T> source;
     private final Executor executor;
 
-    public Execute(Try<T> source, Executor executor) {
+    public Receive(Try<T> source, Executor executor) {
         this.source = source;
         this.executor = executor;
     }
 
     @Override
     public void select(Case<? super T> continuation) {
-        executor.execute(() -> source.select(continuation));
+        source.select(new Case<T>() {
+            @Override
+            public void ok(T t) {
+                executor.execute(() -> continuation.ok(t));
+            }
+
+            @Override
+            public void error(@NonNull Throwable t) {
+                executor.execute(() -> continuation.error(t));
+            }
+        });
     }
 }
+

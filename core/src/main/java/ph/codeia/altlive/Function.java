@@ -19,7 +19,7 @@ public interface Function<D, R> {
     R apply(D d);
 
     /**
-     * Variant for checked functions.
+     * Checked variant.
      *
      * @param <D> The domain of the function
      * @param <R> The range of the function
@@ -42,16 +42,6 @@ public interface Function<D, R> {
      */
     default <S> Function<D, S> then(Function<? super R, ? extends S> f) {
         return d -> f.apply(apply(d));
-    }
-
-    /**
-     * The identity function.
-     *
-     * @param <T> The type of the input and output
-     * @return a function that simply returns whatever was passed into it.
-     */
-    static <T> Function<T, T> id() {
-        return t -> t;
     }
 
     /**

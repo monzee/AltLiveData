@@ -13,8 +13,8 @@ import android.support.annotation.Nullable;
  * <p> This interface is patterned after the public interface of AAC's
  * {@code MutableLiveData} class with a few differences:
  *
- * <ul><li> The receiving and sending sides are split. This interface represents
- * the receiving side and {@link Feed} represents the sending side.
+ * <ul><li> The input and output sides are split. This interface represents
+ * the output side and {@link Feed} represents the input side.
  * <li> {@code getValue()} is excluded from the interface because code relying
  * on that is likely to be using observables incorrectly. It still exists in
  * {@link LiveField} though and is public as well.
@@ -36,7 +36,7 @@ public interface Live<T> {
      * the owner enters the {@code DESTROYED} state, the observer and owner are
      * automatically removed.
      */
-    void observe(LifecycleOwner owner, Observer<? super T> observer);
+    void observe(LifecycleOwner owner, Receiver<? super T> receiver);
 
     /**
      * Removes all registered observers associated with this lifecycle owner.
@@ -54,31 +54,31 @@ public interface Live<T> {
      * other observers in the same live object. When an owner becomes orphaned
      * as a result of this call, the reference to the owner is dropped.
      */
-    void removeObserver(Observer<? super T> observer);
+    void removeObserver(Receiver<? super T> receiver);
 
     /**
      * Associates this observer with the {@link Immortal} instance.
      */
-    default void observeForever(Observer<? super T> observer) {
-        observe(Immortal.INSTANCE, observer);
+    default void observeForever(Receiver<? super T> receiver) {
+        observe(Immortal.INSTANCE, receiver);
     }
 
     /**
      * Associates an observer that will be invoked at most once with the
      * {@link Immortal} instance.
      */
-    default void observeOnce(Observer<? super T> observer) {
-        observeOnce(Immortal.INSTANCE, observer);
+    default void observeOnce(Receiver<? super T> receiver) {
+        observeOnce(Immortal.INSTANCE, receiver);
     }
 
     /**
      * Registers an owner*observer tuple that will be invoked at most once.
      */
-    default void observeOnce(LifecycleOwner owner, Observer<? super T> observer) {
-        observe(owner, new Observer<T>() {
+    default void observeOnce(LifecycleOwner owner, Receiver<? super T> receiver) {
+        observe(owner, new Receiver<T>() {
             @Override
-            public void onChanged(@Nullable T t) {
-                observer.onChanged(t);
+            public void accept(@Nullable T t) {
+                receiver.accept(t);
                 removeObserver(this);
             }
         });

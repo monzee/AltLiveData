@@ -37,15 +37,15 @@ public class LiveFieldTest {
     public void strawman() {
         LiveField<String> field = new LiveField<>();
         AtomicInteger counter = new AtomicInteger(0);
-        Observer<String> observer = s -> counter.incrementAndGet();
+        Receiver<String> receiver = s -> counter.incrementAndGet();
 
-        field.observeForever(observer);
+        field.observeForever(receiver);
         assertEquals(0, counter.get());
         field.setValue("foo");
         assertEquals(1, counter.get());
         assertEquals("foo", field.getValue());
 
-        field.removeObserver(observer);
+        field.removeObserver(receiver);
         field.setValue("bar");
         assertEquals(1, counter.get());
         assertEquals("bar", field.getValue());
@@ -55,7 +55,7 @@ public class LiveFieldTest {
     public void does_not_emit_before_activation() {
         AtomicInteger n = new AtomicInteger(0);
         AtomicInteger counter = new AtomicInteger(0);
-        Observer<Integer> obs = i -> {
+        Receiver<Integer> obs = i -> {
             counter.incrementAndGet();
             //noinspection ConstantConditions
             n.set(i);
@@ -142,9 +142,9 @@ public class LiveFieldTest {
     public void observer_can_remove_itself() {
         LiveField<Void> field = new LiveField<>();
         AtomicInteger counter = new AtomicInteger(0);
-        field.observeForever(new Observer<Void>() {
+        field.observeForever(new Receiver<Void>() {
             @Override
-            public void onChanged(@Nullable Void aVoid) {
+            public void accept(@Nullable Void aVoid) {
                 counter.incrementAndGet();
                 field.removeObserver(this);
             }
@@ -182,7 +182,7 @@ public class LiveFieldTest {
         Life owner = Life.resumed();
         LiveField<Void> field = new LiveField<>(E);
         CountDownLatch done = new CountDownLatch(2);
-        field.observeForever(_v -> {
+        field.observe(owner, _v -> {
             assertEquals("outside", S.get());
             done.countDown();
         });
@@ -221,7 +221,7 @@ public class LiveFieldTest {
         Life o1 = Life.resumed();
         Life o2 = Life.resumed();
         LiveField<Void> field = new LiveField<>();
-        Observer<Void> obs = o -> {};
+        Receiver<Void> obs = o -> {};
 
         field.observe(o1, obs);
         field.observe(o2, obs);
@@ -231,12 +231,32 @@ public class LiveFieldTest {
     public void registering_an_observer_twice_does_not_cause_it_to_be_called_twice_per_update() {
         LiveField<Void> field = new LiveField<>();
         AtomicInteger counter = new AtomicInteger();
-        Observer<Void> obs = o -> counter.incrementAndGet();
+        Receiver<Void> obs = o -> counter.incrementAndGet();
         field.observeForever(obs);
         field.observeForever(obs);
 
         field.setValue(null);
         assertEquals(1, counter.get());
+    }
+
+    @Test
+    public void sticky_field_notifies_observer_on_registration_when_it_has_a_value() {
+        LiveField<String> field = new LiveField.Builder().sticky(true).build();
+        AtomicReference<String> value = new AtomicReference<>();
+
+        field.setValue("foo");
+        field.observeForever(value::set);
+        assertEquals("foo", value.get());
+    }
+
+    @Test
+    public void non_sticky_never_notifies_on_registration_even_when_it_has_a_value() {
+        LiveField<String> field = new LiveField.Builder().sticky(false).build();
+        AtomicReference<String> value = new AtomicReference<>();
+
+        field.setValue("foo");
+        field.observeForever(value::set);
+        assertNull(value.get());
     }
 }
 

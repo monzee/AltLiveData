@@ -24,10 +24,12 @@ public class Recover<T> implements Try<T> {
         }
     }
 
+    @Transformer
     public static <T> Partial<T> flatFrom(Function<Throwable, Try<T>> handler) {
         return new Partial<>(handler);
     }
 
+    @Transformer
     public static <T> Partial<T> from(Function.Checked<Throwable, T> handler) {
         return flatFrom(t -> {
             try {
@@ -57,7 +59,12 @@ public class Recover<T> implements Try<T> {
 
             @Override
             public void error(@NonNull Throwable t) {
-                handler.apply(t).select(continuation);
+                try {
+                    handler.apply(t).select(continuation);
+                }
+                catch (RuntimeException e) {
+                    continuation.error(e);
+                }
             }
         });
     }

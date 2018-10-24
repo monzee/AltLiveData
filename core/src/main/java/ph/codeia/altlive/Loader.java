@@ -25,7 +25,7 @@ public interface Loader<T> {
     /**
      * Converts the current state into a {@link Try}.
      *
-     * <p> The {@code failed} case triggers the {@link Try.Case#raise(Throwable)}
+     * <p> The {@code failed} case triggers the {@link Try.Case#error(Throwable)}
      * case while {@code running} and {@code ok} both trigger the
      * {@link Try.Case#ok(Object)} case.
      */
@@ -48,7 +48,7 @@ public interface Loader<T> {
         });
     }
 
-    static <T> Progress<T> whenDone(Observer<T> observer) {
+    static <T> Progress<T> whenDone(Receiver<T> receiver) {
         return new Progress<T>() {
             @Override
             public void running(@Nullable T currentValue) {
@@ -56,7 +56,7 @@ public interface Loader<T> {
 
             @Override
             public void done(T value) {
-                observer.onChanged(value);
+                receiver.accept(value);
             }
 
             @Override
@@ -65,7 +65,7 @@ public interface Loader<T> {
         };
     }
 
-    interface Progress<T> extends Observer<Loader<? extends T>> {
+    interface Progress<T> extends Receiver<Loader<? extends T>> {
         void running(@Nullable T currentValue);
         void done(T value);
 
@@ -79,7 +79,7 @@ public interface Loader<T> {
         }
 
         @Override
-        default void onChanged(@Nullable Loader<? extends T> loader) {
+        default void accept(@Nullable Loader<? extends T> loader) {
             if (loader != null) {
                 loader.select(this);
             }

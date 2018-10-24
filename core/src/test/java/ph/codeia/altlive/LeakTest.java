@@ -59,10 +59,10 @@ public class LeakTest {
         Life owner = Life.resumed();
         LiveField<Void> field = new LiveField<>();
         AtomicInteger counter = new AtomicInteger(0);
-        Observer<Void> obs = _v -> counter.incrementAndGet();
+        Receiver<Void> obs = _v -> counter.incrementAndGet();
         field.observe(owner, obs);
-        ReferenceQueue<Observer> q = new ReferenceQueue<>();
-        PhantomReference<Observer> ref = new PhantomReference<>(obs, q);
+        ReferenceQueue<Receiver> q = new ReferenceQueue<>();
+        PhantomReference<Receiver> ref = new PhantomReference<>(obs, q);
 
         assertEquals(0, counter.get());
         field.setValue(null);
@@ -79,10 +79,10 @@ public class LeakTest {
         Life owner = Life.resumed();
         LiveField<Void> field = new LiveField<>();
         AtomicInteger counter = new AtomicInteger(0);
-        Observer<Void> obs = _v -> counter.incrementAndGet();
+        Receiver<Void> obs = _v -> counter.incrementAndGet();
         field.observe(owner, obs);
-        ReferenceQueue<Observer> q = new ReferenceQueue<>();
-        PhantomReference<Observer> ref = new PhantomReference<>(obs, q);
+        ReferenceQueue<Receiver> q = new ReferenceQueue<>();
+        PhantomReference<Receiver> ref = new PhantomReference<>(obs, q);
 
         assertEquals(0, counter.get());
         field.setValue(null);
@@ -97,10 +97,10 @@ public class LeakTest {
         Life owner = Life.resumed();
         LiveField<Void> field = new LiveField<>();
         AtomicInteger counter = new AtomicInteger(0);
-        Observer<Void> obs = _v -> counter.incrementAndGet();
+        Receiver<Void> obs = _v -> counter.incrementAndGet();
         field.observe(owner, obs);
-        ReferenceQueue<Observer> q = new ReferenceQueue<>();
-        PhantomReference<Observer> ref = new PhantomReference<>(obs, q);
+        ReferenceQueue<Receiver> q = new ReferenceQueue<>();
+        PhantomReference<Receiver> ref = new PhantomReference<>(obs, q);
 
         assertEquals(0, counter.get());
         field.setValue(null);
@@ -132,7 +132,7 @@ public class LeakTest {
         Life owner = Life.resumed();
         LiveField<Void> field = new LiveField<>();
         AtomicInteger counter = new AtomicInteger(0);
-        Observer<Void> obs = _v -> counter.incrementAndGet();
+        Receiver<Void> obs = _v -> counter.incrementAndGet();
         field.observe(owner, obs);
         ReferenceQueue<LifecycleOwner> q = new ReferenceQueue<>();
         PhantomReference<LifecycleOwner> ref = new PhantomReference<>(owner, q);

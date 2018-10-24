@@ -7,6 +7,8 @@ package ph.codeia.altlive;
 import java.util.Random;
 import java.util.concurrent.Executor;
 
+import ph.codeia.altlive.transform.Execute;
+
 public class SimulatedAuth implements AuthService {
     private static final Random RNG = new Random();
     private static final String[] USERS = {
@@ -30,44 +32,30 @@ public class SimulatedAuth implements AuthService {
 
     @Override
     public Try<String> login(String username, String password) {
-        return continuation -> worker.execute(() -> {
-            try {
-                Thread.sleep(delay);
-                if (failFactor < 1 || RNG.nextInt(failFactor) != 0) {
-                    String prefix = username + ":";
-                    for (String pair : USERS) if (pair.startsWith(prefix)) {
-                        String suffix = pair.substring(prefix.length());
-                        if (suffix.equals(password)) {
-                            continuation.ok("this-is-your-auth-token");
-                            return;
-                        }
-                    }
-                    continuation.error(new Rejected());
+        return Execute.on(worker, () -> {
+            Thread.sleep(delay);
+            if (failFactor < 1 || RNG.nextInt(failFactor) != 0) {
+                String credentials = username + ":" + password;
+                for (String row : USERS) if (row.equals(credentials)) {
+                    return "this-is-your-auth-token";
                 }
-                else {
-                    continuation.error(new Unavailable());
-                }
+                throw new Rejected();
             }
-            catch (InterruptedException e) {
-                continuation.error(e);
+            else {
+                throw new Unavailable();
             }
         });
     }
 
     @Override
     public Try<Void> logout(String token) {
-        return continuation -> worker.execute(() -> {
-            try {
-                Thread.sleep(delay);
-                if (failFactor < 1 || RNG.nextInt(failFactor) != 0) {
-                    continuation.ok(null);
-                }
-                else {
-                    continuation.error(new Unavailable());
-                }
+        return Execute.on(worker, () -> {
+            Thread.sleep(delay);
+            if (failFactor < 1 || RNG.nextInt(failFactor) != 0) {
+                return null;
             }
-            catch (InterruptedException e) {
-                continuation.error(e);
+            else {
+                throw new Unavailable();
             }
         });
     }

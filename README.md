@@ -10,8 +10,23 @@ for the `LiveData` component of the Android Arch Components library.
 - Provides an abstraction that extends the `Either L R` idea with another branch
   indicating that the computation has not completed yet.
 
+
 ## Why
-- problems with livedata
+The `LiveData` component is a very welcome addition to the support library.
+However, ...
+
+### The `postValue(t)` and `onChange(t)` correspondence
+lorem ipsum
+
+### Unconfigurable
+lorem ipsum
+
+### Not an interface
+lorem ipsum
+
+### No place for errors
+lorem ipsum
+
 
 ## Overview
 lorem ipsum
@@ -27,6 +42,7 @@ lorem ipsum
 
 ### `Task<I, O>`
 lorem ipsum
+
 
 ## Installation
 This library is published at JCenter.
@@ -45,6 +61,7 @@ dependencies {
 ```
 Scroll up to the version badge to find out the latest version available and
 replace the version number accordingly.
+
 
 ## License
 ```
