@@ -28,7 +28,7 @@ public final class AndroidLive {
     }
 
     public static <T> LiveField<T> field(LiveField.Builder builder) {
-        return builder.postOn(Threading.UI_POST_AS_NEEDED).build();
+        return builder.copy().postOn(Threading.UI_POST_AS_NEEDED).build();
     }
 
     public static <T> LiveLoader<T> loader() {

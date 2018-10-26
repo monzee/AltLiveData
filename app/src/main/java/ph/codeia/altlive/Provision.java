@@ -12,6 +12,7 @@ import ph.codeia.altlive.android.AndroidLive;
 import ph.codeia.altlive.android.Threading;
 import ph.codeia.altlive.auth.LoginViewModel;
 import ph.codeia.altlive.authmvi.LoginController;
+import ph.codeia.altlivedata.BuildConfig;
 
 public enum Provision implements ViewModelProvider.Factory {
     DEV {
@@ -21,6 +22,10 @@ public enum Provision implements ViewModelProvider.Factory {
         }
     },
     PRODUCTION;
+
+    public static Provision variant() {
+        return BuildConfig.DEBUG ? DEV : PRODUCTION;
+    }
 
     private static class Production {
         static final LiveField.Builder LIVE_BUILDER = AndroidLive.builder(false);

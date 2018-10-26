@@ -37,11 +37,9 @@ public class LoginPresenter extends ViewModel {
     private UseCase useCase;
     private String authToken;
 
-    public LoginPresenter(AuthService auth, LiveField.Builder live) {
-        LiveField<Task<Login.Action, Login.Model>> backingField = live.build();
-        live.sticky(false);
-        events = live.build();
-        state = new LiveTask<>(backingField, o ->  useCase.exec(delegate, auth));
+    public LoginPresenter(AuthService auth, LiveField.Builder builder) {
+        state = new LiveTask<>(builder, o -> useCase.exec(delegate, auth));
+        events = builder.copy().sticky(false).build();
     }
 
     public Live<Task<Login.Action, Login.Model>> state() {

@@ -13,8 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ph.codeia.altlive.Receiver;
 import ph.codeia.altlive.Provision;
+import ph.codeia.altlive.Receiver;
 import ph.codeia.altlive.Task;
 import ph.codeia.altlivedata.R;
 
@@ -25,7 +25,8 @@ public class MviLoginFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        controller = ViewModelProviders.of(requireActivity(), Provision.DEV)
+        controller = ViewModelProviders
+                .of(requireActivity(), Provision.variant())
                 .get(LoginController.class);
         controller.events().observe(this, Receiver.forSome(event -> event.dispatch(view)));
         controller.state().observe(this, new Task.Progress<Login.Action, Login.Model>() {

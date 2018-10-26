@@ -142,6 +142,18 @@ public class LiveField<T> implements Live<T>, Feed<T>, DefaultLifecycleObserver 
         }
 
         /**
+         * Creates a copy of this builder.
+         */
+        public Builder copy() {
+            Builder copy = new Builder();
+            copy.activator = activator;
+            copy.deactivator = deactivator;
+            copy.executor = executor;
+            copy.isSticky = isSticky;
+            return copy;
+        }
+
+        /**
          * Returns a new field with the current configuration.
          *
          * <p> The current configuration is copied into the new field instance,

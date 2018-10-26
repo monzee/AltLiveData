@@ -30,8 +30,7 @@ public class LoginController extends ViewModel {
     public LoginController(AuthService auth, LiveField.Builder builder) {
         this.auth = auth;
         state = new LiveTask<>(builder, this::dispatch);
-        builder.sticky(false);
-        events = builder.build();
+        events = builder.copy().sticky(false).build();
     }
 
     public Live<Task<Login.Action, Login.Model>> state() {

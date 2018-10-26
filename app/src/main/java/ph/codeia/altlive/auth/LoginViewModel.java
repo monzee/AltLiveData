@@ -32,9 +32,9 @@ public class LoginViewModel extends ViewModel {
         usernameErrors = builder.build();
         passwordErrors = builder.build();
         login = new LiveLoader<>(builder);
-        builder.sticky(false);
-        toasts = builder.build();
-        logout = new LiveLoader<>(builder);
+        LiveField.Builder stickyBuilder = builder.copy().sticky(false);
+        toasts = stickyBuilder.build();
+        logout = new LiveLoader<>(stickyBuilder);
     }
 
     public Live<String> toasts() {
