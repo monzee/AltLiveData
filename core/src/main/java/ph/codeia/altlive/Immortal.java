@@ -4,12 +4,12 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.DefaultLifecycleObserver;
-import android.arch.lifecycle.GenericLifecycleObserver;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.LifecycleOwner;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.GenericLifecycleObserver;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 
 /**
  * A {@link LifecycleOwner} that is always in the {@link Lifecycle.State#RESUMED} state.

@@ -4,8 +4,6 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.support.annotation.Nullable;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,7 +14,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static android.arch.lifecycle.Lifecycle.Event.*;
+import androidx.annotation.Nullable;
+
+import static androidx.lifecycle.Lifecycle.Event.*;
 import static org.junit.Assert.*;
 
 public class LiveFieldTest {

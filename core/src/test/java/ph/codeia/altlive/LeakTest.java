@@ -4,14 +4,14 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.LifecycleOwner;
-
 import org.junit.Test;
 
 import java.lang.ref.PhantomReference;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import androidx.lifecycle.LifecycleOwner;
 
 import static org.junit.Assert.*;
 

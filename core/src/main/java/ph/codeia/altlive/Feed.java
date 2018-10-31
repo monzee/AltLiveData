@@ -4,7 +4,7 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * An object that causes a {@link Live} object to update upon receiving a value.

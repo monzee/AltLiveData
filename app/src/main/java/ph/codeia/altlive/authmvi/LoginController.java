@@ -4,10 +4,9 @@ package ph.codeia.altlive.authmvi;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.ViewModel;
-import android.support.annotation.NonNull;
-import android.support.v4.util.PatternsCompat;
-
+import androidx.annotation.NonNull;
+import androidx.core.util.PatternsCompat;
+import androidx.lifecycle.ViewModel;
 import ph.codeia.altlive.AuthService;
 import ph.codeia.altlive.Live;
 import ph.codeia.altlive.LiveField;

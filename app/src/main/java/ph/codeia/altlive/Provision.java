@@ -4,10 +4,9 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
-import android.support.annotation.NonNull;
-
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import ph.codeia.altlive.android.AndroidLive;
 import ph.codeia.altlive.android.Threading;
 import ph.codeia.altlive.auth.LoginViewModel;

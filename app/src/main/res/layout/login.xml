@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--suppress AndroidDomInspection -->
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,7 +10,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:ignore="HardCodedText">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         app:layout_constraintBottom_toTopOf="@+id/password"
         app:layout_constraintVertical_chainStyle="packed">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,9 +28,9 @@
             android:imeOptions="actionNext"
             />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
         app:layout_constraintTop_toBottomOf="@+id/username"
         app:layout_constraintBottom_toTopOf="@+id/logout">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
             android:imeOptions="actionDone"
             />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ProgressBar
         style="?indeterminateProgressStyle"
@@ -85,4 +85,4 @@
         android:text="Login"
         />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

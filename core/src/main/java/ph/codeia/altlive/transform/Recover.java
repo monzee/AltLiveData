@@ -4,8 +4,7 @@ package ph.codeia.altlive.transform;
  * This file is a part of the AltLiveData project.
  */
 
-import android.support.annotation.NonNull;
-
+import androidx.annotation.NonNull;
 import ph.codeia.altlive.Function;
 import ph.codeia.altlive.Try;
 

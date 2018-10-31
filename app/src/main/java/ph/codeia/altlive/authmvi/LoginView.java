@@ -4,16 +4,17 @@ package ph.codeia.altlive.authmvi;
  * This file is a part of the AltLiveData project.
  */
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
-import android.support.transition.TransitionManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.transition.TransitionManager;
 import ph.codeia.altlivedata.R;
 
 class LoginView implements Login.View {

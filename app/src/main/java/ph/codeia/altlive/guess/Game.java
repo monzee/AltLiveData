@@ -4,8 +4,7 @@ package ph.codeia.altlive.guess;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.ViewModel;
-
+import androidx.lifecycle.ViewModel;
 import ph.codeia.altlive.Live;
 import ph.codeia.altlive.LiveTask;
 import ph.codeia.altlive.Task;

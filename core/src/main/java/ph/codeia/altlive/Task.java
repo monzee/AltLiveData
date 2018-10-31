@@ -4,7 +4,7 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public interface Task<I, O> {
     void select(Progress<? super I, ? super O> continuation);

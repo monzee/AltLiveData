@@ -4,11 +4,11 @@ package ph.codeia.altlive.guess;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 import ph.codeia.altlive.Task;
 
 public class GuessingGameActivity extends AppCompatActivity {

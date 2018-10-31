@@ -4,8 +4,8 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.LifecycleOwner;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 
 /**
  * An object that emits values to observers associated with a lifecycle.

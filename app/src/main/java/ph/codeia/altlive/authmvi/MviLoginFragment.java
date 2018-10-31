@@ -4,15 +4,15 @@ package ph.codeia.altlive.authmvi;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import ph.codeia.altlive.Provision;
 import ph.codeia.altlive.Receiver;
 import ph.codeia.altlive.Task;

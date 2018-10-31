@@ -4,13 +4,13 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Represents a computation that might fail.

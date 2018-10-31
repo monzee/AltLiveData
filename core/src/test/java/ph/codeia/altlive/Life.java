@@ -1,13 +1,13 @@
 package ph.codeia.altlive;
 
-import android.arch.lifecycle.DefaultLifecycleObserver;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.LifecycleOwner;
-import android.support.annotation.NonNull;
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 
 class Life extends Lifecycle implements LifecycleOwner {
     private final List<DefaultLifecycleObserver> observers = new CopyOnWriteArrayList<>();

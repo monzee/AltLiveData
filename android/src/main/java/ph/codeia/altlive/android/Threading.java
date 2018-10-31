@@ -7,10 +7,11 @@ package ph.codeia.altlive.android;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import androidx.annotation.NonNull;
 
 public enum Threading implements Executor {
     ANYWHERE {

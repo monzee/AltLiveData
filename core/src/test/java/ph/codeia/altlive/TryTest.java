@@ -4,14 +4,14 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.support.annotation.NonNull;
-
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import androidx.annotation.NonNull;
 
 import static org.junit.Assert.*;
 

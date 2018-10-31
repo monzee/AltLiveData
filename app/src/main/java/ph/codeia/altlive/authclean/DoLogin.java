@@ -4,8 +4,7 @@ package ph.codeia.altlive.authclean;
  * This file is a part of the AltLiveData project.
  */
 
-import android.support.v4.util.PatternsCompat;
-
+import androidx.core.util.PatternsCompat;
 import ph.codeia.altlive.AuthService;
 import ph.codeia.altlive.Try;
 import ph.codeia.altlive.authmvi.Login;

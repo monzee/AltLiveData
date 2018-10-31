@@ -4,17 +4,17 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.DefaultLifecycleObserver;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleOwner;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 
 /**
  * A {@link Live} object whose value is externally changeable.

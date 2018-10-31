@@ -4,19 +4,15 @@ package ph.codeia.altlive.transform;
  * This file is a part of the AltLiveData project.
  */
 
-import android.support.annotation.NonNull;
 import org.junit.AfterClass;
 import org.junit.Test;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import androidx.annotation.NonNull;
 import ph.codeia.altlive.Try;
 
 import static org.junit.Assert.*;

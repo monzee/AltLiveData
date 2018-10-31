@@ -4,20 +4,21 @@ package ph.codeia.altlive.auth;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
-import android.support.transition.TransitionManager;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.transition.TransitionManager;
 import ph.codeia.altlive.AuthService;
 import ph.codeia.altlive.Loader;
 import ph.codeia.altlive.Provision;

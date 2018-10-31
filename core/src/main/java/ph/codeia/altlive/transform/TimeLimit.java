@@ -4,12 +4,11 @@ package ph.codeia.altlive.transform;
  * This file is a part of the AltLiveData project.
  */
 
-import android.support.annotation.NonNull;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.NonNull;
 import ph.codeia.altlive.Function;
 import ph.codeia.altlive.Try;
 

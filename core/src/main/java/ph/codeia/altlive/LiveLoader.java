@@ -4,9 +4,9 @@ package ph.codeia.altlive;
  * This file is a part of the AltLiveData project.
  */
 
-import android.arch.lifecycle.LifecycleOwner;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 
 public class LiveLoader<T> implements Live<Loader<T>>, Feed<Try<T>> {
 
